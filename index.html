@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Possessives &amp; Pronouns Practice (A1–A2)</title>
+<style>
+:root{--bg:#fbf7f2;--card:#fff;--ink:#23262b;--mute:#667;--line:#e4dccf;--blue:#1b6f94;--blueSoft:#dcecf4;--ok:#1f7a4d;--okBg:#dff3e7;--bad:#b3261e;--badBg:#fbe3e0;--wine:#8c2f3f}
+@media(prefers-color-scheme:dark){:root{--bg:#171a1e;--card:#21252b;--ink:#eceef1;--mute:#a3abb5;--line:#363c45;--blue:#6bbbe0;--blueSoft:#1d3340;--ok:#6fd49c;--okBg:#173a28;--bad:#ff8a80;--badBg:#411c19;--wine:#e58a9b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 Georgia,"Iowan Old Style",serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.7rem;margin:.2em 0;color:var(--wine)}
+h2{font-size:1.3rem;margin:.2em 0;color:var(--blue)}
+p{margin:.4em 0}.mute{color:var(--mute);font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:14px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+button{font:inherit;cursor:pointer;color:var(--ink)}
+.topic{text-align:left;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:6px;padding:12px}
+.topic:hover,.opt:hover{border-color:var(--blue)}
+.topic b{display:block;color:var(--blue)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+.primary{background:var(--blue);color:#fff;border:0;border-radius:6px;padding:10px 20px}
+@media(prefers-color-scheme:dark){.primary{color:#0b1a22}}
+.ghost{background:none;border:1px solid var(--line);border-radius:6px;padding:8px 14px}
+:focus-visible{outline:3px solid var(--wine);outline-offset:2px}
+.q{font-size:1.35rem;line-height:1.6;margin:.5em 0}
+.q u{display:inline-block;min-width:90px;text-align:center;text-decoration:none;border-bottom:3px solid var(--ink);color:var(--blue);font-weight:bold}
+.cue{color:var(--mute);font-style:italic}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.opt{background:var(--card);border:2px solid var(--line);border-radius:8px;padding:12px;font-size:1.1rem}
+.opt.ok{background:var(--okBg);border-color:var(--ok)}.opt.no{background:var(--badBg);border-color:var(--bad)}
+.fb{padding:10px 12px;border-radius:6px;margin:10px 0}.fb.ok{background:var(--okBg)}.fb.no{background:var(--badBg)}
+.rule{background:var(--blueSoft);border-radius:8px;padding:10px 14px;font-size:.95rem}
+.rule code{font-family:inherit;font-weight:bold}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:.95rem}td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+textarea{width:100%;font:inherit;font-size:.95rem;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px}
+input[type=text]{font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);width:100%;max-width:300px}
+.hide{display:none}
+@media(max-width:480px){.opts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<div id="home">
+  <h1>Possessives &amp; Pronouns</h1>
+  <p class="mute">Practice for A1–A2 learners. Choose a topic. Each round has 10 questions.</p>
+  <label class="mute">Your name <input type="text" id="name" placeholder="Type your name"></label>
+  <div class="grid card" id="topics" style="border:0;padding:0;background:none"></div>
+  <div class="card">
+    <h2>My progress</h2>
+    <table id="prog"></table>
+    <p class="mute">Progress is saved on this device only. Use “My report” to send results to your teacher.</p>
+    <button class="ghost" id="repBtn">My report</button>
+    <button class="ghost" id="resetBtn">Reset progress</button>
+    <div id="report" class="hide"><p class="mute">Copy this message and send it to your teacher:</p><textarea id="repTxt" rows="9" readonly></textarea><button class="primary" id="copyBtn">Copy</button></div>
+  </div>
+</div>
+
+<div id="game" class="hide">
+  <div class="top"><button class="ghost" id="back">← Topics</button><span id="tname" class="mute"></span><span id="count" class="mute"></span></div>
+  <div class="rule" id="rule"></div>
+  <div class="card"><div class="q" id="q"></div><div class="opts" id="opts"></div><div id="fb" aria-live="polite"></div><button class="primary hide" id="next">Next</button></div>
+</div>
+
+<div id="done" class="hide card">
+  <h2 id="dtitle"></h2><p id="dmsg"></p><div id="dmiss"></div>
+  <button class="primary" id="again">Practice again</button> <button class="ghost" id="home2">Choose a topic</button>
+</div>
+</main>
+<script>
+/* ---------- CONTENT ---------- */
+// Item format: [sentence with ___, answer, optional explicit options]. Cue words go in (parentheses).
+const PA=["my","your","his","her","its","our","their"], PP=["mine","yours","his","hers","ours","theirs"],
+OB=["me","you","him","her","it","us","them"], RF=["myself","yourself","himself","herself","itself","ourselves","themselves","yourselves"];
+const T=[
+{id:"pa",name:"Possessive adjectives",ex:"my, your, his, her, its, our, their",
+ rule:"A <b>possessive adjective</b> comes <b>before a noun</b>: <code>Her</code> mother looks happy. <code>Your</code> wedding was beautiful.",
+ pool:PA.concat(["mine","yours","hers","ours","theirs"]),
+ items:[["I love ___ wedding dress. (I)","my"],["Maria and ___ husband are happy. (she)","her"],["The bride and groom invited ___ friends. (they)","their"],["We sent ___ invitations last week. (we)","our"],["The color of ___ suit is blue. (he)","his"],["You look beautiful in ___ dress. (you)","your"],["The church is old, but ___ windows are beautiful. (the church)","its"],["Ana and I love ___ new apartment. (we)","our"],["Do you know ___ neighbors? (you)","your"],["My sister loves ___ job. (she)","her"],["The children are wearing ___ best clothes. (they)","their"],["Is that ___ phone, Ben? (you)","your"],["Tom and ___ brother are at the party. (he)","his"],["I can’t find ___ keys. (I)","my"],["The dog is eating ___ food. (the dog)","its"],["Anna and Luis are in ___ car. (they)","their"]]},
+{id:"pp",name:"Possessive pronouns",ex:"mine, yours, his, hers, ours, theirs",
+ rule:"A <b>possessive pronoun</b> replaces <b>adjective + noun</b>. No noun after it: You attended my wedding, and I attended <code>yours</code>.",
+ pool:PP.concat(["my","your","her","our","their"]),
+ items:[["This is my dress. It is ___. (I)","mine"],["You attended my wedding, and I attended ___. (you)","yours"],["These flowers are for Anna. They are ___. (she)","hers"],["This is our table. That table is ___. (they)","theirs"],["I have my ticket. Where is ___, Sam? (you)","yours"],["The big house is ___. We live there. (we)","ours"],["Is this pen ___, Lisa? (you)","yours"],["Those coats are ___. The guests left them. (they)","theirs"],["Your car is red. The blue car is ___. (he)","his"],["The white dress is ___. (she)","hers"],["Their gift is big, but ___ is small. (we)","ours"],["That phone isn’t Tom’s. It’s ___. (I)","mine"],["My mother is a nurse. ___ is a teacher. (they, their mother)","theirs"],["Whose bag is this? It’s ___. (she)","hers"]]},
+{id:"ob",name:"Object pronouns",ex:"me, you, him, her, it, us, them",
+ rule:"An <b>object pronoun</b> comes <b>after a verb or preposition</b>: They sent <code>me</code> an invitation. I bought it for <code>you</code>.",
+ pool:OB.concat(["I","he","she","we","they"]),
+ items:[["They sent ___ an invitation. (I)","me"],["Please call ___ tomorrow. (we)","us"],["I love Anna. I want to marry ___. (she)","her"],["The groom is nervous. Please help ___. (he)","him"],["The guests are late. I can’t see ___. (they)","them"],["This gift is for you. I bought it for ___. (you)","you"],["Where is the cake? I can’t find ___. (it)","it"],["Anna and Tom are here. Sit with ___. (they)","them"],["The planner can show ___ the garden. (we)","us"],["Do you like Mark? Yes, I like ___ a lot. (he)","him"],["My mother helped ___ with the dress. (I)","me"],["Look at the bride! Everybody is watching ___. (she)","her"],["I have a question for you. Can I ask ___? (you)","you"],["The cake is beautiful. Let’s cut ___. (it)","it"]]},
+{id:"rf",name:"Reflexive pronouns",ex:"myself, yourself, himself, herself, itself, ourselves, yourselves, themselves",
+ rule:"A <b>reflexive pronoun</b> is used when the subject and object are the <b>same person</b>: She looked at <code>herself</code>. We did it <code>ourselves</code>.",
+ pool:RF.concat(["me","him","them","us","her"]),
+ items:[["I made the cake by ___. (I)","myself"],["She looked at ___ in the mirror. (she)","herself"],["The couple wants to enjoy ___. (they)","themselves"],["We planned the party by ___. (we)","ourselves"],["He cut ___ in the kitchen. (he)","himself"],["Be careful! You can hurt ___. (you)","yourself"],["The cat washed ___. (it)","itself"],["Children, please help ___ to cake. (you, plural)","yourselves"],["I’m proud of ___. (I)","myself"],["Anna taught ___ to dance. (she)","herself"],["They want to make the wedding special for ___. (they)","themselves"],["Tom and I painted the room by ___. (we)","ourselves"],["Don’t worry. He can take care of ___. (he)","himself"]]},
+{id:"pn",name:"Possessive nouns (’s and s’)",ex:"the bride’s dress, the parents’ house, the men’s suits",
+ rule:"Singular noun: <code>’s</code> (bride’s). Plural with -s: <code>’</code> only (parents’). Irregular plural: <code>’s</code> (men’s, women’s, children’s). Names ending in -s: <code>’s</code> (Charles’s). Time words: <code>’s</code> (today’s).",
+ items:[["The ___ dress is white. (one bride)","bride’s",["bride’s","brides’","brides","bride"]],["The ___ tuxedo is black. (one groom)","groom’s",["groom’s","grooms’","grooms","groom"]],["She got married in her ___ house. (two parents)","parents’",["parents’","parent’s","parents’s","parents"]],["The ___ coats are in the coat room. (many guests)","guests’",["guests’","guest’s","guests","guests’s"]],["The ___ suits are black. (men)","men’s",["men’s","mens’","men’","mens"]],["The ___ dresses are beautiful. (women)","women’s",["women’s","womens’","womens","women’"]],["Do you know ___ wife? (Charles)","Charles’s",["Charles’s","Charle’s","Charles","Charl’s"]],["___ weddings are very expensive. (today)","Today’s",["Today’s","Todays’","Todays","Today"]],["___ assignment is easy. (this month)","This month’s",["This month’s","This months’","This months","This month"]],["My ___ name is Laura. (one sister)","sister’s",["sister’s","sisters’","sisters","sister"]],["The ___ toys are on the floor. (many children)","children’s",["children’s","childrens’","childrens","children’"]],["Our ___ party is on Saturday. (two friends)","friends’",["friends’","friend’s","friends","friends’s"]],["Where is the ___ phone? (one teacher)","teacher’s",["teacher’s","teachers’","teachers","teacher"]],["The ___ rings are gold. (two brides)","brides’",["brides’","bride’s","brides","brides’s"]],["___ has pearls. (the front of the dress)","The front of the dress",["The front of the dress","The dress’s front","The dresses front","The dress front’s"]],["___ is open. (the door of the church)","The door of the church",["The door of the church","The church’s door","The churchs door","The door’s church"]]]}
+];
+T.push({id:"mix",name:"Mixed review",ex:"all topics together",rule:"Choose the correct form. Think: <b>before a noun</b> → my/your…; <b>no noun</b> → mine/yours…; <b>after a verb</b> → me/him…; <b>same person</b> → myself…; <b>owner + thing</b> → bride’s / parents’.",items:[]});
+
+/* ---------- STATE ---------- */
+const $=id=>document.getElementById(id);
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let S={};try{S=JSON.parse(localStorage.getItem("poss-app")||"{}")}catch(e){}
+S.p=S.p||{};
+const save=()=>{try{localStorage.setItem("poss-app",JSON.stringify(S))}catch(e){}};
+let cur,qs,i,score,miss,answered;
+
+function mk(topic,it){
+  let opts=it[2];
+  if(!opts){const pool=topic.pool.filter(w=>w.toLowerCase()!==it[1].toLowerCase());opts=sh([it[1]].concat(sh(pool).slice(0,3)))}
+  return{t:topic,s:it[0],a:it[1],o:sh(opts)};
+}
+function build(t){
+  if(t.id==="mix"){let all=[];T.slice(0,5).forEach(x=>sh(x.items).slice(0,4).forEach(it=>all.push(mk(x,it))));return sh(all).slice(0,10)}
+  return sh(t.items).slice(0,10).map(it=>mk(t,it));
+}
+
+/* ---------- HOME ---------- */
+function home(){
+  $("home").classList.remove("hide");$("game").classList.add("hide");$("done").classList.add("hide");
+  $("name").value=S.name||"";
+  $("topics").innerHTML="";
+  T.forEach(t=>{const p=S.p[t.id]||{a:0,c:0},pct=p.a?Math.round(100*p.c/p.a):0;
+    const b=document.createElement("button");b.className="topic";
+    b.innerHTML=`<b>${t.name}</b><span class="mute">${t.ex}</span><div class="bar"><i style="width:${pct}%"></i></div>`;
+    b.onclick=()=>start(t);$("topics").appendChild(b)});
+  $("prog").innerHTML="<tr><th>Topic</th><th>Correct</th><th>Accuracy</th></tr>"+T.map(t=>{const p=S.p[t.id]||{a:0,c:0};
+    return`<tr><td>${t.name}</td><td>${p.c}/${p.a}</td><td>${p.a?Math.round(100*p.c/p.a)+"%":"–"}</td></tr>`}).join("");
+  $("report").classList.add("hide");
+}
+$("name").oninput=e=>{S.name=e.target.value;save()};
+
+/* ---------- GAME ---------- */
+function start(t){
+  cur=t;qs=build(t);i=0;score=0;miss=[];
+  $("home").classList.add("hide");$("done").classList.add("hide");$("game").classList.remove("hide");
+  $("tname").textContent=t.name;$("rule").innerHTML=t.rule;show();
+}
+function show(){
+  answered=false;const q=qs[i];
+  $("count").textContent=`${i+1} / ${qs.length}`;
+  const cue=q.s.match(/\(([^)]*)\)\s*$/),body=cue?q.s.replace(cue[0],"").trim():q.s;
+  $("q").innerHTML=body.replace("___","<u>&nbsp;?&nbsp;</u>")+(cue?` <span class="cue">(${cue[1]})</span>`:"");
+  $("opts").innerHTML="";$("fb").innerHTML="";$("next").classList.add("hide");
+  q.o.forEach(o=>{const b=document.createElement("button");b.className="opt";b.textContent=o;b.onclick=()=>pick(b,o);$("opts").appendChild(b)});
+}
+function pick(btn,o){
+  if(answered)return;answered=true;const q=qs[i],ok=o===q.a,tid=q.t.id;
+  const p=S.p[tid]=S.p[tid]||{a:0,c:0};p.a++;if(ok)p.c++;
+  const m=S.p.mix=S.p.mix||{a:0,c:0};if(cur.id==="mix"){m.a++;if(ok)m.c++}
+  const sentence=q.s.replace(/\([^)]*\)\s*$/,"").trim().replace("___","<b>"+q.a+"</b>");
+  [...$("opts").children].forEach(b=>{if(b.textContent===q.a)b.classList.add("ok")});
+  if(ok){score++;btn.classList.add("ok");$("fb").innerHTML=`<div class="fb ok">✓ Correct! ${sentence}</div>`}
+  else{btn.classList.add("no");miss.push({t:q.t.name,s:sentence});$("fb").innerHTML=`<div class="fb no">Not quite. ${sentence}</div>`}
+  save();$("next").textContent=i+1<qs.length?"Next":"See results";$("next").classList.remove("hide");$("next").focus();
+}
+$("next").onclick=()=>{i++;i<qs.length?show():finish()};
+function msg(pct){
+  if(pct>=90)return"Excellent! You are ready for a harder challenge. Try the Mixed review.";
+  if(pct>=70)return"Good work! Read the rule again and practice the questions you missed.";
+  if(pct>=50)return"You are improving. Read the rule box, then try this topic again.";
+  return"This topic is difficult now, and that is OK. Read the rule and practice again slowly.";
+}
+function finish(){
+  $("game").classList.add("hide");$("done").classList.remove("hide");
+  const pct=Math.round(100*score/qs.length);
+  $("dtitle").textContent=`${cur.name}: ${score} / ${qs.length} (${pct}%)`;
+  $("dmsg").textContent=msg(pct);
+  $("dmiss").innerHTML=miss.length?"<p><b>Review these:</b></p><ul>"+miss.map(m=>`<li>${m.s}</li>`).join("")+"</ul>":"";
+}
+$("again").onclick=()=>start(cur);$("home2").onclick=home;$("back").onclick=home;
+
+/* ---------- REPORT ---------- */
+$("repBtn").onclick=()=>{
+  const rows=T.slice(0,5).filter(t=>S.p[t.id]&&S.p[t.id].a);
+  let txt=`Name: ${S.name||"(no name)"}\nDate: ${new Date().toLocaleDateString()}\n\n`;
+  txt+=rows.length?rows.map(t=>{const p=S.p[t.id];return`${t.name}: ${p.c}/${p.a} (${Math.round(100*p.c/p.a)}%)`}).join("\n"):"No practice yet.";
+  if(rows.length){const w=rows.reduce((a,b)=>S.p[a.id].c/S.p[a.id].a<S.p[b.id].c/S.p[b.id].a?a:b);txt+=`\n\nNeeds more practice: ${w.name}`}
+  $("repTxt").value=txt;$("report").classList.remove("hide");
+};
+$("copyBtn").onclick=()=>{$("repTxt").select();try{navigator.clipboard.writeText($("repTxt").value)}catch(e){document.execCommand("copy")}$("copyBtn").textContent="Copied!";setTimeout(()=>$("copyBtn").textContent="Copy",1500)};
+$("resetBtn").onclick=()=>{if(confirm("Delete all progress on this device?")){S={p:{}};save();home()}};
+home();
+</script>
+</body>
+</html>
